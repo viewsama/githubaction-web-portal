@@ -1,4 +1,4 @@
-name: Automate Changelog PR Title
+name: Automate Changelog PR Titlee
 
 on:
   pull_request:
