@@ -24,13 +24,4 @@ jobs:
           # Set the output variable for the generated title
           echo "::set-output name=title::$formatted_title"
 
-      - name: Update Pull Request title
-        uses: actions/github-script@v5
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const title = "${{ steps.generate-title.outputs.title }}";
-            github.issues.update({
-              issue_number: context.issue.number,
-              title: title
-            });
+
