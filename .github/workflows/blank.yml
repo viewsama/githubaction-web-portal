@@ -1,26 +1,36 @@
-# This is a basic workflow to help you get started with Actions
+name: Automate Changelog PR Title
 
-name: Conventional Commits
-
-# Controls when the workflow will run
 on:
-  # Triggers the workflow on push or pull request events but only for the "main" branch
   pull_request:
-    types: [edited, opened, reopened, synchronize]
+    types: [opened, edited]
 
-
-  # Allows you to run this workflow manually from the Actions tab
-  workflow_dispatch:
-
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  pr-checker:
-    name: PR title
+  update-pr-title:
     runs-on: ubuntu-latest
-
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-         - uses: EkoCommunications/PRChecks/pr-title@develop
+      - name: Checkout repository
+        uses: actions/checkout@v2
 
-    
+      - name: Generate PR title from Conventional Commits
+        id: generate-title
+        run: |
+          # Run a script to extract conventional commits and format PR title
+          # Replace this with your script to generate the PR title
+          # Example: Use git log command to get commit messages and generate title
+          commits=$(git log --pretty=format:"%s" origin/main..HEAD)
+          # Your logic to create a formatted title based on commits
+          formatted_title="Your Generated Title: $commits"
+
+          # Set the output variable for the generated title
+          echo "::set-output name=title::$formatted_title"
+
+      - name: Update Pull Request title
+        uses: actions/github-script@v5
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const title = "${{ steps.generate-title.outputs.title }}";
+            github.issues.update({
+              issue_number: context.issue.number,
+              title: title
+            });
